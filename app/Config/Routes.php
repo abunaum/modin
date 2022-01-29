@@ -50,12 +50,24 @@ $routes->group('person', function ($routes) {
 });
 
 $routes->group('nikah', function ($routes) {
-    $routes->get('masuk', 'Nikah::masuk');
+    $routes->group('masuk', function ($routes) {
+        $routes->get('/', 'Nikah::masuk');
+        $routes->get('detail/(:num)', 'Nikah::masukdetail/$1');
+    });
 });
 $routes->group('proses', function ($routes) {
     $routes->post('data_masuk', 'Proses::data_masuk');
     $routes->post('person', 'Proses::person');
     $routes->post('edit_person/(:num)', 'Proses::edit_person/$1');
+});
+
+$routes->group('print', function ($routes) {
+    $routes->group('masuk', function ($routes) {
+        $routes->group('n1', function ($routes) {
+            $routes->get('lk/(:num)', 'Modelnikah::masukn1lk/$1');
+            $routes->get('pr/(:num)', 'Modelnikah::masukn1pr/$1');
+        });
+    });
 });
 
 /*

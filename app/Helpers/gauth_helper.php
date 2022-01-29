@@ -2,8 +2,8 @@
 function client()
 {
     $client = new Google_Client();
-    $client->setClientId('60462852072-nhqde119tomacn498543ludgk8s5u3es.apps.googleusercontent.com');
-    $client->setClientSecret('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');
+    $client->setClientId('935030474584-494e3qthkr64hi4077ou4gjsjtojcfa0.apps.googleusercontent.com');
+    $client->setClientSecret('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');
     $client->setAccessType("offline");
     $client->setIncludeGrantedScopes(true);
     $client->setScopes('https://www.googleapis.com/auth/calendar');

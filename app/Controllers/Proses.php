@@ -13,8 +13,170 @@ class Proses extends BaseController
 
     public function data_masuk()
     {
-        $var = $this->request->getVar();
-        dd($var);
+        // $var = $this->request->getVar();
+        // dd($var);
+        $db = \Config\Database::connect();
+        $db->transStart();
+        $nikah = new \App\Models\Datanikah();
+        $person = new \App\Models\Person();
+        $pr = $person->where('nik', $this->request->getVar('nikpr'))->first();
+        $idpr = $pr['id'];
+        $lk = $person->where('nik', $this->request->getVar('niklk'))->first();
+        $idlk = $lk['id'];
+        $nikah->insert([
+            'jenis' => 'masuk',
+            'register' => $this->request->getVar('noregister'),
+            'idpr' => $idpr,
+            'statuspr' => $this->request->getVar('statuspr'),
+            'statusaypr' => $this->request->getVar('statusaypr'),
+            'statusibpr' => $this->request->getVar('statusibpr'),
+            'idlk' => $idlk,
+            'statuslk' => $this->request->getVar('statuslk'),
+        ]);
+        $idnikah = $nikah->getInsertID();
+        $noac = new \App\Models\Noac();
+        if ($this->request->getVar('noac') != '') {
+            $noac->insert([
+                'idnikah' => $idnikah,
+                'idperson' => $idpr,
+                'noac' => $this->request->getVar('noac')
+            ]);
+        }
+        if ($this->request->getVar('noaclk') != '') {
+            $noac->insert([
+                'idnikah' => $idnikah,
+                'idperson' => $idlk,
+                'noac' => $this->request->getVar('noaclk')
+            ]);
+        }
+        if ($this->request->getVar('statusaypr') == 'ada') {
+            $aypr = $person->where('nik', $this->request->getVar('nikay'))->first();
+            $idaypr = $aypr['id'];
+            $ortu = new \App\Models\Ortuada();
+            $ortu->insert([
+                'idnikah' => $idnikah,
+                'status' => 'aypr',
+                'bin' => $this->request->getVar('binay'),
+                'idperson' => $idaypr
+            ]);
+        } else {
+            $ortu = new \App\Models\Ortumeninggal();
+            $ortu->insert([
+                'idnikah' => $idnikah,
+                'status' => 'aypr',
+                'nama' => $this->request->getVar('namaaypr')
+            ]);
+        }
+
+        if ($this->request->getVar('statusibpr') == 'ada') {
+            $ibpr = $person->where('nik', $this->request->getVar('nikib'))->first();
+            $idibpr = $ibpr['id'];
+            $ortu = new \App\Models\Ortuada();
+            $ortu->insert([
+                'idnikah' => $idnikah,
+                'status' => 'ibpr',
+                'bin' => $this->request->getVar('binib'),
+                'idperson' => $idibpr
+            ]);
+        } else {
+            $ortu = new \App\Models\Ortumeninggal();
+            $ortu->insert([
+                'idnikah' => $idnikah,
+                'status' => 'ibpr',
+                'nama' => $this->request->getVar('namaibpr')
+            ]);
+        }
+
+        $statusdesa = $this->request->getVar('statuscatin');
+        if ($statusdesa == 'beda') {
+            $dataaylk = [
+                'statusaylk' => 'meninggal',
+            ];
+            $nikah->update($idnikah, $dataaylk);
+            $ortu = new \App\Models\Ortumeninggal();
+            $ortu->insert([
+                'idnikah' => $idnikah,
+                'status' => 'aylk',
+                'nama' => $this->request->getVar('binlk')
+            ]);
+        } else {
+            if ($this->request->getVar('statusaylk') == 'ada') {
+                $dataaylk = [
+                    'statusaylk' => 'ada',
+                ];
+                $nikah->update($idnikah, $dataaylk);
+                $aylk = $person->where('nik', $this->request->getVar('nikaylk'))->first();
+                $idaylk = $aylk['id'];
+                $ortu = new \App\Models\Ortuada();
+                $ortu->insert([
+                    'idnikah' => $idnikah,
+                    'status' => 'aylk',
+                    'bin' => $this->request->getVar('binaylk'),
+                    'idperson' => $idaylk
+                ]);
+            } else {
+                $dataaylk = [
+                    'statusaylk' => 'meninggal',
+                ];
+                $nikah->update($idnikah, $dataaylk);
+                $ortu = new \App\Models\Ortumeninggal();
+                $ortu->insert([
+                    'idnikah' => $idnikah,
+                    'status' => 'aylk',
+                    'nama' => $this->request->getVar('namaaylk')
+                ]);
+            }
+
+            if ($this->request->getVar('statusiblk') == 'ada') {
+                $dataayib = [
+                    'statusiblk' => 'ada',
+                ];
+                $nikah->update($idnikah, $dataayib);
+                $iblk = $person->where('nik', $this->request->getVar('nikiblk'))->first();
+                $idiblk = $iblk['id'];
+                $ortu = new \App\Models\Ortuada();
+                $ortu->insert([
+                    'idnikah' => $idnikah,
+                    'status' => 'iblk',
+                    'bin' => $this->request->getVar('biniblk'),
+                    'idperson' => $idiblk
+                ]);
+            } else {
+                $dataiblk = [
+                    'statusiblk' => 'meninggal',
+                ];
+                $nikah->update($idnikah, $dataiblk);
+                $ortu = new \App\Models\Ortumeninggal();
+                $ortu->insert([
+                    'idnikah' => $idnikah,
+                    'status' => 'iblk',
+                    'nama' => $this->request->getVar('namaiblk')
+                ]);
+            }
+        }
+
+        $acara = new \App\Models\Acara();
+        $acara->insert([
+            'idnikah' => $idnikah,
+            'maskawin' => $this->request->getVar('maskawin'),
+            'tempat' => $this->request->getVar('lokasi'),
+            'tanggalnikah' => $this->request->getVar('tglnikah'),
+            'jam' => $this->request->getVar('jam') . ':00'
+        ]);
+        $db->transComplete();
+        if ($db->transStatus() === false) {
+            session()->setFlashdata('error', [
+                'pesan' => 'Ooops.',
+                'value' => 'Gagal menginput data'
+            ]);
+            return redirect()->to(base_url('nikah/masuk'));
+        } else {
+            session()->setFlashdata('sukses', [
+                'pesan' => 'Mantap.',
+                'value' => 'Data berhasil di input'
+            ]);
+            return redirect()->to(base_url('nikah/masuk'));
+        }
     }
 
     public function person()
@@ -363,7 +525,7 @@ class Proses extends BaseController
             ]);
             return redirect()->to(base_url("person/detail/$nikperson"))->withInput();
         }
-        
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://dev.farizdotid.com/api/daerahindonesia/provinsi/$provinsi",
@@ -435,7 +597,7 @@ class Proses extends BaseController
         curl_close($curl);
         $des = json_decode($response, TRUE);
         $des = $des['nama'];
-        
+
         $this->person->save([
             'id' => $id,
             'nama' => $nama,

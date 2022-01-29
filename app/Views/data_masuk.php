@@ -42,21 +42,27 @@
                 <thead>
                     <tr>
                         <th class="cell">No</th>
-                        <th class="cell">Nama</th>
-                        <th class="cell">Nik</th>
-                        <th class="cell">TTL</th>
-                        <th class="cell">Alamat</th>
+                        <th class="cell">No Register</th>
+                        <th class="cell">NIK Perempuan</th>
+                        <th class="cell">NIK Laki - laki</th>
+                        <th class="cell">Tanggal Nikah</th>
                         <th class="cell">Detail</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="cell">#15346</td>
-                        <td class="cell">Abunaum</td>
-                        <td class="cell"><span class="truncate">3153170305980003</span></td>
-                        <td class="cell"><span class="truncate">Desa Satreyan RT 09 RW 02</span></td>
-                        <td class="cell"><span>Probolinggo</span><span class="note">5 Mei 1998</span></td>
-                        <td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
+                        <?php $no = 1; ?>
+                        <?php foreach ($data as $d) : ?>
+                            <?php $id = $d['id']; ?>
+                            <td class="cell"><?= $no++; ?></td>
+                            <td class="cell"><?= $d['register']; ?></td>
+                            <td class="cell"><?= $d['nikpr']; ?></td>
+                            <td class="cell"><?= $d['niklk']; ?></td>
+                            <td class="cell"><?= $d['acara']; ?></td>
+                            <td class="cell">
+                                <a class="btn-sm app-btn-secondary" href="<?= base_url('nikah/masuk/detail') . '/' . $id; ?>">View</a>
+                            </td>
+                        <?php endforeach; ?>
                     </tr>
                 </tbody>
             </table>
@@ -90,6 +96,12 @@
             </div>
             <div class="modal-body">
                 <form action="<?= base_url('proses/data_masuk'); ?>" method="post">
+                    <div class="mb-3 row">
+                        <label for="noregister" class="col-sm-2 col-form-label">No Register</label>
+                        <div class="col-sm-10" id="noregister">
+                            <input type="text" class="form-control" id="noregister" name="noregister">
+                        </div>
+                    </div>
                     <b>
                         <h3>Data Catin Wanita</h3>
                     </b>
@@ -218,6 +230,19 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
+                        <label for="statuslk" class="col-sm-2 col-form-label">Status</label>
+                        <div class="col-sm-4">
+                            <select class="form-select" aria-label="statuslk" name="statuslk" id="statuslk" onchange="ubahstatuslk()">
+                                <option value="jejaka">Jejaka</option>
+                                <option value="duda">Duda</option>
+                            </select>
+                        </div>
+                        <label for="noac" id="noaclblk" class="col-sm-1 col-form-label" style="display: none;">NO AC</label>
+                        <div class="col-sm-5" id="noacinputlk" style="display: none;">
+                            <input type="text" class="form-control" id="noaclk" name="noaclk">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
                         <label for="binlk" class="col-sm-2 col-form-label">Bin</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="binlk" name="binlk">
@@ -241,20 +266,39 @@
                             <h3>Data Ayah Catin Pria</h3>
                         </b>
                         <div class="mb-3 row">
-                            <label for="nikaylk" class="col-sm-2 col-form-label">NIK</label>
+                            <label for="statusaylk" class="col-sm-2 col-form-label">Status Ayah Catin Pria</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" id="nikaylk" name="nikaylk" list="niklistaylk">
-                                <datalist id="niklistaylk">
-                                    <?php foreach ($laki as $lk) : ?>
-                                        <option value="<?= $lk['nik']; ?>"><?= $lk['nama']; ?></option>
-                                    <?php endforeach; ?>
-                                </datalist>
+                                <select class="form-select" aria-label="statusaylk" name="statusaylk" id="statusaylk" onchange="cekortu('aylk')">
+                                    <option value="ada">Hidup</option>
+                                    <option value="meninggal">Meninggal</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="mb-3 row">
-                            <label for="binaylk" class="col-sm-2 col-form-label">Bin</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="binaylk" name="binaylk">
+                        <div id="hidupaylk">
+                            <div class="mb-3 row">
+                                <label for="nikay" class="col-sm-2 col-form-label">NIK</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="nikaylk" name="nikaylk" list="niklistaylk">
+                                    <datalist id="niklistaylk">
+                                        <?php foreach ($laki as $lk) : ?>
+                                            <option value="<?= $lk['nik']; ?>"><?= $lk['nama']; ?></option>
+                                        <?php endforeach; ?>
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="binay" class="col-sm-2 col-form-label">Bin</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="binaylk" name="binaylk">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="matiaylk" style="display: none;">
+                            <div class="mb-3 row">
+                                <label for="namaaypr" class="col-sm-2 col-form-label">Nama</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="namaaylk" name="namaaylk">
+                                </div>
                             </div>
                         </div>
                         <hr>
@@ -262,20 +306,39 @@
                             <h3>Data Ibu Catin Pria</h3>
                         </b>
                         <div class="mb-3 row">
-                            <label for="nikiblk" class="col-sm-2 col-form-label">NIK</label>
+                            <label for="statusiblk" class="col-sm-2 col-form-label">Status Ibu Catin Pria</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" id="nikiblk" name="nikiblk" list="niklistiblk">
-                                <datalist id="niklistiblk">
-                                    <?php foreach ($perempuan as $lk) : ?>
-                                        <option value="<?= $lk['nik']; ?>"><?= $lk['nama']; ?></option>
-                                    <?php endforeach; ?>
-                                </datalist>
+                                <select class="form-select" aria-label="statusiblk" name="statusiblk" id="statusiblk" onchange="cekortu('iblk')">
+                                    <option value="ada">Hidup</option>
+                                    <option value="meninggal">Meninggal</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="mb-3 row">
-                            <label for="biniblk" class="col-sm-2 col-form-label">Binti</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="biniblk" name="biniblk">
+                        <div id="hidupiblk">
+                            <div class="mb-3 row">
+                                <label for="nikiblk" class="col-sm-2 col-form-label">NIK</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="nikiblk" name="nikiblk" list="niklistiblk">
+                                    <datalist id="niklistiblk">
+                                        <?php foreach ($perempuan as $pr) : ?>
+                                            <option value="<?= $pr['nik']; ?>"><?= $pr['nama']; ?></option>
+                                        <?php endforeach; ?>
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="biniblk" class="col-sm-2 col-form-label">Binti</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="biniblk" name="biniblk">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="matiiblk" style="display: none;">
+                            <div class="mb-3 row">
+                                <label for="namaiblk" class="col-sm-2 col-form-label">Nama</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="namaiblk" name="namaiblk">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -298,7 +361,7 @@
                             <input type="date" class="form-control" id="tglnikah" name="tglnikah">
                         </div>
                         <div class="col-sm-3">
-                            <input type="time" class="form-control" id="tglnikah" name="tglnikah">
+                            <input type="time" class="form-control" id="jam" name="jam">
                         </div>
                     </div>
                     <hr>
@@ -311,6 +374,64 @@
         </div>
     </div>
 </div>
+
+<?php if (session()->getFlashdata('sukses')) : ?>
+    <?php
+    $flash = session()->getFlashdata('sukses');
+    $pesan = $flash['pesan'];
+    $value = $flash['value'];
+    ?>
+    <script type="text/javascript">
+        var pesan = '<?= $pesan ?>';
+        var value = '<?= $value ?>';
+        let timerInterval
+        Swal.fire({
+            icon: 'success',
+            title: pesan,
+            html: value,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: () => {
+                Swal.showLoading()
+                timerInterval = setInterval(() => 100)
+            },
+            willClose: () => {
+                clearInterval(timerInterval)
+            }
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {}
+        })
+    </script>
+<?php endif; ?>
+
+<?php if (session()->getFlashdata('error')) : ?>
+    <?php
+    $flash = session()->getFlashdata('error');
+    $pesan = $flash['pesan'];
+    $value = $flash['value'];
+    ?>
+    <script type="text/javascript">
+        var pesan = '<?= $pesan ?>';
+        var value = '<?= $value ?>';
+        let timerInterval
+        Swal.fire({
+            icon: 'error',
+            title: pesan,
+            html: value,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: () => {
+                Swal.showLoading()
+                timerInterval = setInterval(() => 100)
+            },
+            willClose: () => {
+                clearInterval(timerInterval)
+            }
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {}
+        })
+    </script>
+<?php endif; ?>
 
 <script>
     function fieldSorter(fields) {
@@ -344,6 +465,17 @@
         } else {
             document.getElementById("noaclb").style.display = 'none';
             document.getElementById("noacinput").style.display = 'none';
+        }
+    }
+
+    function ubahstatuslk() {
+        var status = $('#statuslk').val();
+        if (status == 'duda') {
+            document.getElementById("noaclblk").style.display = 'block';
+            document.getElementById("noacinputlk").style.display = 'block';
+        } else {
+            document.getElementById("noaclblk").style.display = 'none';
+            document.getElementById("noacinputlk").style.display = 'none';
         }
     }
 

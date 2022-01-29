@@ -101,21 +101,10 @@
                     <div class="mb-3 row">
                         <label for="jk" class="col-sm-2 col-form-label">Jenis kelamin</label>
                         <div class="col-sm-2">
-                            <select class="form-select" aria-label="jk" name="jk" id="jk" onchange="ubahjk()">
-                                <option value="">Jenis Kelamin</option>
+                            <select class="form-select" aria-label="jk" name="jk" id="jk">
                                 <option value="lk">Laki - laki</option>
                                 <option value="pr">Perempuan</option>
                             </select>
-                        </div>
-                        <label for="status" class="col-sm-1 col-form-label">Status</label>
-                        <div class="col-sm-2">
-                            <select class="form-select" aria-label="status" name="status" id="status" onchange="ubahstatus()">
-                                <option value="">Status</option>
-                            </select>
-                        </div>
-                        <label for="noac" id="noaclb" class="col-sm-1 col-form-label">NO AC</label>
-                        <div class="col-sm-4" id="noacinput">
-                            <input type="text" class="form-control" id="noac" name="noac">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -225,27 +214,6 @@
     </script>
 <?php endif; ?>
 <script>
-    function ubahjk() {
-        var jk = $('#jk').val();
-        $("#status option").remove();
-        document.getElementById("noaclb").style.display = 'none';
-        document.getElementById("noacinput").style.display = 'none';
-        var st = document.getElementById('status');
-        st.innerHTML = "<option value=''>Status</option>";
-        if (jk == 'lk') {
-            st.innerHTML += "<option value='jejaka'>Jejaka</option>";
-            st.innerHTML += "<option value='duda'>Duda</option>";
-        } else if (jk == 'pr') {
-            st.innerHTML += "<option value='perawan'>Perawan</option>";
-            st.innerHTML += "<option value='janda'>Janda</option>";
-            st.innerHTML += "<option value='istri-ke-2'>Istri ke 2</option>";
-            st.innerHTML += "<option value='istri-ke-3'>Istri ke 3</option>";
-            st.innerHTML += "<option value='istri-ke-4'>Istri ke 4</option>";
-        } else {
-
-        }
-    }
-
     function fieldSorter(fields) {
         return function(a, b) {
             return fields
@@ -269,8 +237,6 @@
         };
     }
     $(document).ready(function() {
-        document.getElementById("noaclb").style.display = 'none';
-        document.getElementById("noacinput").style.display = 'none';
         var xhr = new XMLHttpRequest();
 
         xhr.addEventListener("readystatechange", function() {

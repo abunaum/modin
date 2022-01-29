@@ -11,24 +11,15 @@ class DataNikah extends Migration
         $data = [
             'id'             => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'jenis'          => ['type' => 'varchar', 'constraint' => 255],
-            'nikpr'          => ['type' => 'varchar', 'constraint' => 255],
+            'register'       => ['type' => 'varchar', 'constraint' => 255],
+            'idpr'           => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
+            'statuspr'       => ['type' => 'varchar', 'constraint' => 255],
             'statusaypr'     => ['type' => 'varchar', 'constraint' => 255],
-            'namaaypr'       => ['type' => 'varchar', 'constraint' => 255],
-            'binaypr'        => ['type' => 'varchar', 'constraint' => 255],
-            'nikaypr'        => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
             'statusibpr'     => ['type' => 'varchar', 'constraint' => 255],
-            'namaibpr'       => ['type' => 'varchar', 'constraint' => 255],
-            'binibpr'        => ['type' => 'varchar', 'constraint' => 255],
-            'nikibpr'        => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
-            'niklk'          => ['type' => 'varchar', 'constraint' => 255],
-            'statusaylk'     => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
-            'namaaylk'       => ['type' => 'varchar', 'constraint' => 255],
-            'binaylk'        => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
-            'nikaylk'        => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
-            'statusiblk'     => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
-            'namaiblk'       => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
-            'biniblk'        => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
-            'nikiblk'        => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
+            'idlk'           => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
+            'statuslk'       => ['type' => 'varchar', 'constraint' => 255],
+            'statusaylk'     => ['type' => 'varchar', 'constraint' => 255],
+            'statusiblk'     => ['type' => 'varchar', 'constraint' => 255],
             'created_at'     => ['type' => 'datetime', 'null' => true],
             'updated_at'     => ['type' => 'datetime', 'null' => true],
             'deleted_at'     => ['type' => 'datetime', 'null' => true],
@@ -36,6 +27,9 @@ class DataNikah extends Migration
 
         $this->forge->addField($data);
         $this->forge->addKey('id', true);
+        $this->forge->addKey(['idpr', 'idlk']);
+        $this->forge->addForeignKey('idpr', 'person', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('idlk', 'person', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('datanikah', true);
     }
 
@@ -43,6 +37,8 @@ class DataNikah extends Migration
     {
         if ($this->db->DBDriver != 'SQLite3') // @phpstan-ignore-line
         {
+            $this->forge->dropForeignKey('datanikah', 'datanikah_idpr_foreign');
+            $this->forge->dropForeignKey('datanikah', 'datanikah_idlk_foreign');
         }
 
         $this->forge->dropTable('datanikah', true);
